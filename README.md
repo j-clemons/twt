@@ -26,7 +26,11 @@ twt go -b <branch>
 
 3. To remove a session and / or worktree
 ```
-twt rm -b <branch>
+twt rm -b <branch> [OPTIONS]
+
+OPTIONS:
+    -f, --force	    Delete the worktree & branch regardless of unstaged files
+    -y, --confirm	Skip confirmation prompt, but respect git safety
 ```
 
 # Usage
