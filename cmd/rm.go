@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/fatih/color"
@@ -49,6 +51,27 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 
+		confirm, err := flags.GetBool("confirm")
+		if err != nil {
+			color.Red("Couldn't check confirm flag")
+			return
+		}
+
+		// Ask for confirmation unless --force is used
+		if !force && !confirm {
+			fmt.Printf("Are you sure you want to remove worktree and session for branch '%s'? (y/N): ", branch)
+			reader := bufio.NewReader(os.Stdin)
+			response, err := reader.ReadString('\n')
+			if err != nil {
+				color.Red("Error reading confirmation")
+				return
+			}
+			response = strings.TrimSpace(strings.ToLower(response))
+			if response != "y" && response != "yes" {
+				color.Yellow("Operation cancelled")
+				return
+			}
+		}
 		nextBranch, err := flags.GetString("target")
 		if err != nil {
 			color.Red("Couldn't fetch next branch without error")
@@ -64,14 +87,13 @@ var removeWorktree = &cobra.Command{
 		branchExistsAndCheckedOut := git.HasBranch(branch, true)
 		worktreeExists := git.HasWorktree(branch)
 		if !branchExistsAndCheckedOut {
-			color.Red("Branch %s doesn't exist, or isn't checked out", branch)
+			color.Red(fmt.Sprintf("Branch %s doesn't exist, or isn't checked out", branch))
 			return
 		}
 		if !worktreeExists {
-			color.Red("Can't delete worktree %s as it doesn't exist", branch)
+			color.Red(fmt.Sprintf("Can't delete worktree %s as it doesn't exist", branch))
 			return
 		}
-
 		if errs := git.RemoveWorktree(sessionName, branch, force, deleteBranch); len(errs) > 0 {
 			for _, err := range errs {
 				color.Red(fmt.Sprintf("Error removing worktree: %s", err))
@@ -98,12 +120,15 @@ var removeWorktree = &cobra.Command{
 		}
 
 		// After
+		if len(possibleDestinations) == 0 {
+			color.Red("No available sessions to switch to")
+			return
+		}
 		newSession := strings.ReplaceAll(possibleDestinations[0], "\"", "")
 		if !tmux.HasSession(newSession) {
 			color.Red("Session doesn't exist")
 			return
 		}
-
 		if nextBranch != "" {
 			tmux.SwitchToSession(targetSession)
 		} else {
@@ -120,6 +145,7 @@ func init() {
 	rootCmd.AddCommand(removeWorktree)
 	removeWorktree.Flags().BoolP("delete-branch", "d", false, "Remove branch as well as the worktree")
 	removeWorktree.Flags().BoolP("force", "f", false, "Delete the worktree &| branch regardless of unstaged files")
+	removeWorktree.Flags().BoolP("confirm", "y", false, "Skip confirmation prompt")
 	removeWorktree.Flags().StringP("branch", "b", "", "Branch of which to remove a new worktree + session.")
 	removeWorktree.Flags().StringP("target", "t", "", "Where to go after removing session")
 }
