@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/todaatsushi/twt/internal/checks"
-	"github.com/todaatsushi/twt/internal/command"
+	"github.com/j-clemons/twt/internal/checks"
+	"github.com/j-clemons/twt/internal/command"
 )
 
 func getGitDir() (string, error) {

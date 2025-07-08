@@ -1,7 +1,7 @@
 package tmux
 
 import (
-	"github.com/todaatsushi/twt/internal/command"
+	"github.com/j-clemons/twt/internal/command"
 )
 
 func SendKeys(session string, toSend ...string) {

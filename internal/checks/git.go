@@ -3,7 +3,7 @@ package checks
 import (
 	"strconv"
 
-	"github.com/todaatsushi/twt/internal/command"
+	"github.com/j-clemons/twt/internal/command"
 )
 
 func InGitDir() bool {

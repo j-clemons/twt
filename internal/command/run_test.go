@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/todaatsushi/twt/internal/command"
+	"github.com/j-clemons/twt/internal/command"
 )
 
 func TestValidate(t *testing.T) {

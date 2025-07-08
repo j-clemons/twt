@@ -1,7 +1,7 @@
 package git
 
 import (
-	"github.com/todaatsushi/twt/internal/command"
+	"github.com/j-clemons/twt/internal/command"
 )
 
 func RemoveWorktree(name, branch string, force, deleteBranch bool) []string {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/todaatsushi/twt/internal/git"
+	"github.com/j-clemons/twt/internal/git"
 )
 
 func GetCommonFilesDirPath() (string, error) {

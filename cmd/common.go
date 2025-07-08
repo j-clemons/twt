@@ -6,9 +6,9 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/todaatsushi/twt/internal/git"
-	"github.com/todaatsushi/twt/internal/tmux"
-	"github.com/todaatsushi/twt/internal/utils"
+	"github.com/j-clemons/twt/internal/git"
+	"github.com/j-clemons/twt/internal/tmux"
+	"github.com/j-clemons/twt/internal/utils"
 )
 
 const NEW_DIR_PERM = 0700

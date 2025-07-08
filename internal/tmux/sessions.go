@@ -3,7 +3,7 @@ package tmux
 import (
 	"errors"
 
-	"github.com/todaatsushi/twt/internal/command"
+	"github.com/j-clemons/twt/internal/command"
 )
 
 func SwitchToSession(name string) {

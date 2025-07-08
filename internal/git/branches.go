@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/todaatsushi/twt/internal/command"
+	"github.com/j-clemons/twt/internal/command"
 )
 
 func HasBranch(branch string, checkedOut bool) bool {

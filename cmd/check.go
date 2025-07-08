@@ -6,8 +6,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/todaatsushi/twt/internal/checks"
-	"github.com/todaatsushi/twt/internal/utils"
+	"github.com/j-clemons/twt/internal/checks"
+	"github.com/j-clemons/twt/internal/utils"
 )
 
 func checkTmux() {
