@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	"github.com/spf13/cobra"
 	"github.com/j-clemons/twt/internal/git"
 	"github.com/j-clemons/twt/internal/tmux"
 	"github.com/j-clemons/twt/internal/utils"
+	"github.com/spf13/cobra"
 )
 
 const NEW_DIR_PERM = 0700

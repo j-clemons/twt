@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	"github.com/spf13/cobra"
 	"github.com/j-clemons/twt/internal/checks"
 	"github.com/j-clemons/twt/internal/utils"
+	"github.com/spf13/cobra"
 )
 
 func checkTmux() {
