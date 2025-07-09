@@ -33,11 +33,6 @@ var goToWorktree = &cobra.Command{
 		}
 
 		flags := cmd.Flags()
-		switchSession, err := flags.GetBool("switch")
-		if err != nil {
-			color.Red("Couldn't fetch switch session flag.")
-			return
-		}
 		branch, err := flags.GetString("branch")
 		if err != nil || branch == "" {
 			color.Red("Couldn't fetch target branch.")
@@ -117,11 +112,9 @@ var goToWorktree = &cobra.Command{
 			utils.ExecuteScriptInSession(sessionName, "go", "post.sh")
 		}
 
-		if switchSession {
-			tmux.SwitchToSession(sessionName)
-			if removeSession {
-				tmux.KillSession(currentSession)
-			}
+		tmux.SwitchToSession(sessionName)
+		if removeSession {
+			tmux.KillSession(currentSession)
 		}
 	},
 }
@@ -129,7 +122,6 @@ var goToWorktree = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(goToWorktree)
 
-	goToWorktree.Flags().BoolP("switch", "s", false, "Switch to session after creation / retrieval.")
 	goToWorktree.Flags().StringP("branch", "b", "", "Branch of which to create a new worktree + session.")
 	goToWorktree.Flags().BoolP("no-scripts", "N", false, "Don't run any scripts in the common files dir if they exist for this command.")
 	goToWorktree.Flags().BoolP("remove-session", "r", false, "Remove current session (not worktree) after.")
