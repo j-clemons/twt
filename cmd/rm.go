@@ -7,12 +7,12 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/spf13/cobra"
 	"github.com/j-clemons/twt/internal/checks"
 	"github.com/j-clemons/twt/internal/command"
 	"github.com/j-clemons/twt/internal/git"
 	"github.com/j-clemons/twt/internal/tmux"
 	"github.com/j-clemons/twt/internal/utils"
+	"github.com/spf13/cobra"
 )
 
 var removeWorktree = &cobra.Command{
@@ -26,13 +26,8 @@ var removeWorktree = &cobra.Command{
 			return
 		}
 
-		flags := cmd.Flags()
-		branch, err := flags.GetString("branch")
-		if err != nil || branch == "" {
-			color.Red("Couldn't fetch target branch.")
-			return
-		}
-		branch, err = command.Validate(branch)
+		branch := args[0]
+		branch, err := command.Validate(branch)
 		if err != nil {
 			color.Red(err.Error())
 			return
@@ -40,6 +35,7 @@ var removeWorktree = &cobra.Command{
 
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
 
+		flags := cmd.Flags()
 		deleteBranch, err := flags.GetBool("delete-branch")
 		if err != nil {
 			color.Red("Couldn't check delete-branch flag")
@@ -146,6 +142,5 @@ func init() {
 	removeWorktree.Flags().BoolP("delete-branch", "d", false, "Remove branch as well as the worktree")
 	removeWorktree.Flags().BoolP("force", "f", false, "Delete the worktree &| branch regardless of unstaged files")
 	removeWorktree.Flags().BoolP("confirm", "y", false, "Skip confirmation prompt")
-	removeWorktree.Flags().StringP("branch", "b", "", "Branch of which to remove a new worktree + session.")
 	removeWorktree.Flags().StringP("target", "t", "", "Where to go after removing session")
 }

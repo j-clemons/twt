@@ -24,7 +24,7 @@ var goToWorktree = &cobra.Command{
 
 	Also switches to a new session if a worktree exists (ie. the branch is checked out).
 	`,
-	Args: cobra.MatchAll(cobra.ExactArgs(0)),
+	Args: cobra.MatchAll(cobra.ExactArgs(1)),
 	Run: func(cmd *cobra.Command, args []string) {
 		shouldCancel := checks.AssertReady()
 		if shouldCancel {
@@ -32,18 +32,14 @@ var goToWorktree = &cobra.Command{
 			return
 		}
 
-		flags := cmd.Flags()
-		branch, err := flags.GetString("branch")
-		if err != nil || branch == "" {
-			color.Red("Couldn't fetch target branch.")
-			return
-		}
-		branch, err = command.Validate(branch)
+		branch := args[0]
+		branch, err := command.Validate(branch)
 		if err != nil {
 			color.Red(err.Error())
 			return
 		}
 
+		flags := cmd.Flags()
 		removeSession, err := flags.GetBool("remove-session")
 		if err != nil {
 			color.Red("Error fetching the remove session flag")
@@ -122,7 +118,6 @@ var goToWorktree = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(goToWorktree)
 
-	goToWorktree.Flags().StringP("branch", "b", "", "Branch of which to create a new worktree + session.")
 	goToWorktree.Flags().BoolP("no-scripts", "N", false, "Don't run any scripts in the common files dir if they exist for this command.")
 	goToWorktree.Flags().BoolP("remove-session", "r", false, "Remove current session (not worktree) after.")
 }
