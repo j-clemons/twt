@@ -16,9 +16,9 @@ import (
 )
 
 var removeWorktree = &cobra.Command{
-	Use:   "rm",
+	Use:   "rm <branch>",
 	Short: "Remove a git worktree, tmux session, and optionally the linked branch.",
-	Args:  cobra.MatchAll(cobra.ExactArgs(0)),
+	Args:  cobra.MatchAll(cobra.ExactArgs(1)),
 	Run: func(cmd *cobra.Command, args []string) {
 		shouldCancel := checks.AssertReady()
 		if shouldCancel {
@@ -34,6 +34,7 @@ var removeWorktree = &cobra.Command{
 		}
 
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
+		worktreeName := utils.GenerateWorktreeNameFromBranch(branch)
 
 		flags := cmd.Flags()
 		deleteBranch, err := flags.GetBool("delete-branch")
@@ -73,10 +74,13 @@ var removeWorktree = &cobra.Command{
 			color.Red("Couldn't fetch next branch without error")
 			return
 		}
-		targetSession := utils.GenerateSessionNameFromBranch(nextBranch)
-		if !tmux.HasSession(targetSession) {
-			color.Red(fmt.Sprintf("Target session '%s' doesn't exist", targetSession))
-			return
+		var targetSession string
+		if nextBranch != "" {
+			targetSession = utils.GenerateSessionNameFromBranch(nextBranch)
+			if !tmux.HasSession(targetSession) {
+				color.Red(fmt.Sprintf("Target session '%s' doesn't exist", targetSession))
+				return
+			}
 		}
 
 		// Git cleanup
@@ -90,7 +94,7 @@ var removeWorktree = &cobra.Command{
 			color.Red(fmt.Sprintf("Can't delete worktree %s as it doesn't exist", branch))
 			return
 		}
-		if errs := git.RemoveWorktree(sessionName, branch, force, deleteBranch); len(errs) > 0 {
+		if errs := git.RemoveWorktree(worktreeName, branch, force, deleteBranch); len(errs) > 0 {
 			for _, err := range errs {
 				color.Red(fmt.Sprintf("Error removing worktree: %s", err))
 			}

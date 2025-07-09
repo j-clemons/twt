@@ -14,7 +14,7 @@ import (
 )
 
 var goToWorktree = &cobra.Command{
-	Use:   "go",
+	Use:   "go <branch>",
 	Short: "Gets or creates a tmux session from a given branch.",
 	Long: `Given a branch name, either gets or creates a new Tmux session and creates
 	/ switches to that branch within that session.
@@ -52,6 +52,7 @@ var goToWorktree = &cobra.Command{
 
 		// Switch to session if exists
 		sessionName := utils.GenerateSessionNameFromBranch(branch)
+		worktreeName := utils.GenerateWorktreeNameFromBranch(branch)
 		isNewSession := !tmux.HasSession(sessionName)
 
 		baseDir, err := git.GetBaseDir()
@@ -71,7 +72,7 @@ var goToWorktree = &cobra.Command{
 		tmux.NewSession(sessionName)
 		worktreeExists := git.HasWorktree(branch)
 		if worktreeExists {
-			changeDirCmd := fmt.Sprintf("cd %s/%s", baseDir, sessionName)
+			changeDirCmd := fmt.Sprintf("cd %s/%s", baseDir, worktreeName)
 			tmux.SendKeys(sessionName, changeDirCmd, "Enter")
 			tmux.SendKeys(sessionName, "clear", "Enter")
 			tmux.SwitchToSession(sessionName)
@@ -87,14 +88,14 @@ var goToWorktree = &cobra.Command{
 
 		branchIsNew := !git.HasBranch(branch, false)
 		if branchIsNew {
-			newWorktreeCmd := fmt.Sprintf("git worktree add %s -b %s", sessionName, branch)
+			newWorktreeCmd := fmt.Sprintf("git worktree add %s -b %s", worktreeName, branch)
 			tmux.SendKeys(sessionName, newWorktreeCmd, "Enter")
 		} else {
-			newWorktreeCmd := fmt.Sprintf("git worktree add %s %s", sessionName, branch)
+			newWorktreeCmd := fmt.Sprintf("git worktree add %s %s", worktreeName, branch)
 			tmux.SendKeys(sessionName, newWorktreeCmd, "Enter")
 		}
 
-		changeToNewTreeCmd := fmt.Sprintf("cd %s", sessionName)
+		changeToNewTreeCmd := fmt.Sprintf("cd %s/%s", baseDir, worktreeName)
 		tmux.SendKeys(sessionName, changeToNewTreeCmd, "Enter")
 		tmux.SendKeys(sessionName, "clear", "Enter")
 
