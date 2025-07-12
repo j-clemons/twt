@@ -14,6 +14,10 @@ func NewSession(cleanBranchName string) {
 	command.Run("tmux", "new-session", "-s", cleanBranchName, "-d")
 }
 
+func NewSessionWithDirectory(sessionName, startingDir string) {
+	command.Run("tmux", "new-session", "-s", sessionName, "-c", startingDir, "-d")
+}
+
 func KillSession(name string) {
 	command.Run("tmux", "kill-session", "-t", name)
 }
