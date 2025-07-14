@@ -10,6 +10,7 @@ import (
 	"github.com/j-clemons/twt/internal/checks"
 	"github.com/j-clemons/twt/internal/command"
 	"github.com/j-clemons/twt/internal/git"
+	"github.com/j-clemons/twt/internal/state"
 	"github.com/j-clemons/twt/internal/tmux"
 	"github.com/j-clemons/twt/internal/utils"
 	"github.com/spf13/cobra"
@@ -138,6 +139,12 @@ var removeWorktree = &cobra.Command{
 			}
 		}
 		tmux.KillSession(sessionName)
+
+		// Unregister session from state
+		err = state.UnregisterSession(sessionName)
+		if err != nil {
+			color.Yellow("Warning: Failed to unregister session: %v", err)
+		}
 	},
 }
 

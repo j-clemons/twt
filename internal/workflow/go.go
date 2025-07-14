@@ -2,8 +2,10 @@ package workflow
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/j-clemons/twt/internal/git"
+	"github.com/j-clemons/twt/internal/state"
 	"github.com/j-clemons/twt/internal/tmux"
 	"github.com/j-clemons/twt/internal/utils"
 )
@@ -63,6 +65,14 @@ func ExecuteGo(opts GoOptions) error {
 
 	if err != nil {
 		return err
+	}
+
+	// Register session in state
+	repoName := filepath.Base(baseDir)
+	worktreePath := fmt.Sprintf("%s/%s", baseDir, worktreeName)
+	err = state.RegisterSession(sessionName, baseDir, repoName, opts.Branch, worktreePath)
+	if err != nil {
+		fmt.Printf("Warning: Failed to register session: %v\n", err)
 	}
 
 	return handlePostInitialization(sessionName, opts.NoScripts, opts.RemoveCurrentSession, opts.CurrentSession)

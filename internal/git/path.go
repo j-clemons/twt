@@ -2,6 +2,7 @@ package git
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -24,11 +25,17 @@ func getBaseFromWorktree() (string, error) {
 	return filepath.Dir(out[0]), nil
 }
 
+type NotInGitDirError struct{}
+
+func (e *NotInGitDirError) Error() string {
+	return fmt.Sprintf("Not in git directory")
+}
+
 func GetBaseDir() (string, error) {
 	if checks.IsInWorktree() {
 		return getBaseFromWorktree()
 	} else if checks.InGitDir() {
 		return getGitDir()
 	}
-	return "", errors.New("Not in worktree or git dir.")
+	return "", &NotInGitDirError{}
 }
