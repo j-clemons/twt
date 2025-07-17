@@ -3,6 +3,7 @@ package workflow
 import (
 	"fmt"
 	"path/filepath"
+	"time"
 
 	"github.com/j-clemons/twt/internal/git"
 	"github.com/j-clemons/twt/internal/state"
@@ -53,7 +54,13 @@ func ExecuteGo(opts GoOptions) error {
 			return err
 		}
 
-		// Recreate session in the new worktree directory
+		err = git.WaitForWorktreeReady(baseDir, worktreeName, opts.Branch, 10*time.Second)
+		if err != nil {
+			tmux.KillSession(sessionName)
+			git.RemoveWorktree(worktreeName, opts.Branch, true, false)
+			return fmt.Errorf("worktree creation failed: %v", err)
+		}
+
 		tmux.KillSession(sessionName)
 		sessionDir := fmt.Sprintf("%s/%s", baseDir, worktreeName)
 		err = tmux.CreateSessionInDirectory(sessionName, sessionDir)
