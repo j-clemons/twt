@@ -7,6 +7,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/fatih/color"
 	"github.com/j-clemons/twt/internal/state"
 	"github.com/j-clemons/twt/internal/tmux"
@@ -67,41 +68,43 @@ func (m model) View() string {
 		return ""
 	}
 
-	s := "All TWT Sessions:\n\n"
+	var s strings.Builder
 
-	s += fmt.Sprintf(" %-15s %-20s %-20s %-10s %-10s\n", "REPOSITORY", "BRANCH", "SESSION", "STATUS", "CREATED")
-	s += strings.Repeat("-", 85) + "\n"
+	highlightStyle := lipgloss.NewStyle().
+		Background(lipgloss.Color("#7D56F4")).
+		Foreground(lipgloss.Color("#FFFFFF")).
+		Bold(true)
+
+	s.WriteString("TWT Sessions:\n\n")
+
+	s.WriteString(fmt.Sprintf("  %-15s %-25s %-10s\n", "REPOSITORY", "BRANCH", "CREATED"))
+	s.WriteString(strings.Repeat("-", 65) + "\n")
 
 	for i, session := range m.sessions {
-		cursor := " "
-		if m.cursor == i {
-			cursor = ">"
-		}
-
-		statusColor := color.GreenString
-		if session.Status == state.StatusInactive {
-			statusColor = color.RedString
-		}
-
 		repoName := session.RepoName
 		if repoName == "" {
 			repoName = filepath.Base(session.RepoPath)
 		}
 
-		s += fmt.Sprintf("%s%-15s %-20s %-20s %-10s %-10s\n",
-			cursor,
+		sessionStr := fmt.Sprintf("%-15s %-25s %-10s",
 			repoName,
 			session.Branch,
-			session.Name,
-			statusColor(string(session.Status)),
 			formatAge(session.Age()),
 		)
+
+		if m.cursor == i {
+			s.WriteString(highlightStyle.Render(fmt.Sprintf("> %s", sessionStr)))
+		} else {
+			s.WriteString(fmt.Sprintf("  %s", sessionStr))
+		}
+
+		s.WriteString("\n")
 	}
 
-	s += "\nPress 'enter' or 'space' to switch to selected session\n"
-	s += "Press 'q' to quit\n"
+	s.WriteString("\nPress 'enter' or 'space' to switch to selected session\n")
+	s.WriteString("Press 'q' to quit\n")
 
-	return s
+	return s.String()
 }
 
 func formatAge(duration time.Duration) string {
